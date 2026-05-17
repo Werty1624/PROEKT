@@ -1,0 +1,134 @@
+from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QListWidget, QTextEdit, QLineEdit, QPushButton
+from PyQt5.QtCore import Qt
+import json
+
+app = QApplication([])
+window = QWidget()
+window.resize(1100, 800)
+window.setWindowTitle('Справочник по грамматике русского языка')
+window.setObjectName("MainWindow")
+
+# --- Создание элементов интерфейса ---
+list_rules = QListWidget()
+text_rules = QTextEdit()
+text_rules.setPlaceholderText('Здесь будет отображаться текст правила...')
+
+name_rules = QLineEdit()
+name_rules.setPlaceholderText('Введите название правила для добавления/поиска...')
+
+add_rule_button = QPushButton('Добавить')
+del_rule_button = QPushButton('Удалить')
+edit_rule_button = QPushButton('Изменить')
+
+# --- Настройка макетов (Layouts) и отступов ---
+main_layout = QHBoxLayout()
+main_layout.setContentsMargins(25, 25, 25, 25)  # Отступы от краев окна
+main_layout.setSpacing(20)                     # Расстояние между левой и правой панелью
+
+left_layout = QVBoxLayout()
+left_layout.setSpacing(12)
+
+right_layout = QVBoxLayout()
+right_layout.setSpacing(12)
+
+layout_buttons = QHBoxLayout()
+layout_buttons.setSpacing(10)
+
+# --- Сборка интерфейса ---
+layout_buttons.addWidget(add_rule_button)
+layout_buttons.addWidget(edit_rule_button)
+layout_buttons.addWidget(del_rule_button)
+
+left_layout.addWidget(list_rules)
+
+right_layout.addWidget(text_rules, stretch=5)
+right_layout.addWidget(name_rules, stretch=1)
+right_layout.addLayout(layout_buttons)
+
+main_layout.addLayout(left_layout, 3)          # Левая панель чуть шире для удобства чтения списка
+main_layout.addLayout(right_layout, 7)
+window.setLayout(main_layout)
+
+# --- Стили оформления (Современный Dark Theme) ---
+window.setStyleSheet('''
+    /* Главное окно */
+    QWidget#MainWindow {
+        background-color: #1e1e24;
+    }
+    
+    /* Общие стили для текстовых полей и списков */
+    QListWidget, QTextEdit, QLineEdit {
+        background-color: #2a2a32;
+        color: #f5f5f5;
+        border: 1px solid #3f3f48;
+        border-radius: 8px;
+        padding: 10px;
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 16px;
+    }
+    
+    /* Специфичные настройки для списка правил */
+    QListWidget {
+        font-size: 17px;
+        font-weight: 500;
+    }
+    QListWidget::item {
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 4px;
+        color: #e0e0e0;
+    }
+    QListWidget::item:hover {
+        background-color: #3a3a45;
+        color: #ffffff;
+    }
+    QListWidget::item:selected {
+        background-color: #4a90e2;
+        color: #ffffff;
+    }
+    
+    /* Поле ввода названия */
+    QLineEdit {
+        font-size: 15px;
+        height: 25px;
+    }
+    QLineEdit:focus, QTextEdit:focus {
+        border: 1px solid #4a90e2;
+    }
+    
+    /* Кнопки */
+    QPushButton {
+        background-color: #3a3a45;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 12px;
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 15px;
+        font-weight: bold;
+        min-width: 100px;
+    }
+    QPushButton:hover {
+        background-color: #4a90e2;
+    }
+    QPushButton:pressed {
+        background-color: #357abd;
+    }
+    
+    /* Кнопка "Удалить" — сделаем акцентной (красноватой) при наведении */
+    QPushButton:text {
+        color: white;
+    }
+''')
+
+# --- Загрузка данных из JSON ---
+try:
+    with open('grammar_guide.json', 'r', encoding='utf-8') as file:
+        grammar_rules = json.load(file)
+        for rule in grammar_rules:
+            list_rules.addItem(rule)
+except FileNotFoundError:
+    pass
+
+window.show()
+app.exec()
