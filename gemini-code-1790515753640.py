@@ -1,4 +1,4 @@
-import sys
+import sys 
 from datetime import datetime
 import numpy as np
 import pyqtgraph as pg
